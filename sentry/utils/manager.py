@@ -176,34 +176,34 @@ class SentryManager(models.Manager):
             else:
                 minutes = now.minute
             normalized_datetime = now.replace(second=0, microsecond=0, minute=minutes)
-			
-			try:
-            	affected = group.messagecountbyminute_set.filter(date=normalized_datetime).update(times_seen=F('times_seen') + 1)
-	            if not affected:
-	                group.messagecountbyminute_set.create(
-	                    date=normalized_datetime,
-	                    times_seen=1,
-	                )
+            
+            try:
+                affected = group.messagecountbyminute_set.filter(date=normalized_datetime).update(times_seen=F('times_seen') + 1)
+                if not affected:
+                    group.messagecountbyminute_set.create(
+                        date=normalized_datetime,
+                        times_seen=1,
+                    )
 
-	            for key, value in (
-	                    ('server_name', server_name),
-	                    ('site', site),
-	                    ('logger', logger_name),
-	                ):
-	                if not value:
-	                    continue
+                for key, value in (
+                        ('server_name', server_name),
+                        ('site', site),
+                        ('logger', logger_name),
+                    ):
+                    if not value:
+                        continue
 
-	                FilterValue.objects.get_or_create(key=key, value=value)
+                    FilterValue.objects.get_or_create(key=key, value=value)
 
-	                affected = group.messagefiltervalue_set.filter(key=key, value=value).update(times_seen=F('times_seen') + 1)
-	                if not affected:
-	                    group.messagefiltervalue_set.create(
-	                        key=key,
-	                        value=value,
-	                        times_seen=1,
-	                    )
-			except Exception:
-				pass
+                    affected = group.messagefiltervalue_set.filter(key=key, value=value).update(times_seen=F('times_seen') + 1)
+                    if not affected:
+                        group.messagefiltervalue_set.create(
+                            key=key,
+                            value=value,
+                            times_seen=1,
+                        )
+            except Exception:
+                pass
 
         except Exception, exc:
             # TODO: should we mail admins when there are failures?
