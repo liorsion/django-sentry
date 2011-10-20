@@ -203,7 +203,7 @@ class SentryManager(models.Manager):
                             times_seen=1,
                         )
             except Exception:
-                pass
+                return instance
 
         except Exception, exc:
             # TODO: should we mail admins when there are failures?
